@@ -1,0 +1,14 @@
+# Rust build artifacts
+target/
+Cargo.lock
+**/*.rs.bk
+*.pdb
+
+# General
+.DS_Store
+.env
+*.log
+
+# IDE
+.vscode/
+.idea/
