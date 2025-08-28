@@ -21,7 +21,8 @@ use timer::{PomodoroTimer, SessionType};
 // Overlay imports removed - using transparent_overlay module
 
 const WINDOW_WIDTH: f32 = 400.0;
-const WINDOW_HEIGHT: f32 = 600.0;
+const WINDOW_HEIGHT_COLLAPSED: f32 = 450.0;
+const WINDOW_HEIGHT_EXPANDED: f32 = 650.0;
 
 pub struct PomodoroApp {
     timer: Arc<Mutex<PomodoroTimer>>,
@@ -188,6 +189,16 @@ impl eframe::App for PomodoroApp {
                 // Settings toggle
                 if ui.button(RichText::new("⚙ Settings").size(18.0)).clicked() {
                     self.show_settings = !self.show_settings;
+                    
+                    // Resize window based on settings visibility
+                    let new_height = if self.show_settings {
+                        WINDOW_HEIGHT_EXPANDED
+                    } else {
+                        WINDOW_HEIGHT_COLLAPSED
+                    };
+                    
+                    // Request window resize through context
+                    ctx.send_viewport_cmd(egui::ViewportCommand::InnerSize(Vec2::new(WINDOW_WIDTH, new_height)));
                 }
 
                 // Settings panel
@@ -274,7 +285,7 @@ fn run_app() -> Result<(), eframe::Error> {
     
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
-            .with_inner_size([WINDOW_WIDTH, WINDOW_HEIGHT])
+            .with_inner_size([WINDOW_WIDTH, WINDOW_HEIGHT_COLLAPSED])
             .with_resizable(false)
             .with_icon(load_icon()),
         ..Default::default()
