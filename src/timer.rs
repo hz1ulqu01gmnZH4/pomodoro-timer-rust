@@ -83,7 +83,14 @@ impl PomodoroTimer {
     }
 
     pub fn skip(&mut self) {
+        // Save the current running state before skipping
+        let was_running = self.is_running;
         self.complete_session();
+        // If timer wasn't running before skip, stop it after transitioning
+        if !was_running {
+            self.is_running = false;
+            self.last_update = None;
+        }
     }
 
     pub fn update(&mut self) {
@@ -105,8 +112,6 @@ impl PomodoroTimer {
     }
 
     fn complete_session(&mut self) {
-        self.is_running = false;
-        self.last_update = None;
         self.just_completed = true;
 
         match self.current_session {
@@ -132,6 +137,10 @@ impl PomodoroTimer {
                 }
             }
         }
+        
+        // Automatically start the next session
+        self.is_running = true;
+        self.last_update = Some(Instant::now());
     }
 
     pub fn get_time_string(&mut self) -> String {
